@@ -20,4 +20,4 @@ from modules.xiao import *
 # Start intialization process
 rvr.wake()
 time.sleep(2)
-battery_percent = None
+
