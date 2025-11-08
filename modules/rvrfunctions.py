@@ -55,24 +55,30 @@ def turn_right_with_signal(amount):
     time.sleep(1)
     rear_red_low()
 
-def drive_forward(seconds, speed=64):
-    """Drive forward with dim rear lights, then stop with full red."""
-    rear_red_low()
-    rvr.drive_control.drive_forward_seconds(
-        speed=speed,
-        heading=0,
-        time_to_drive=seconds
-    )
-    rear_red_full()
-    time.sleep(1)
 
-def drive_backward(seconds, speed=64):
-    """Drive backward with dim rear lights, then stop with full red."""
-    rear_red_low()
-    rvr.drive_control.drive_backward_seconds(
-        speed=speed,
+def move_distance(inches):
+    rvr.reset_yaw()
+
+    # 6 inches/sec → convert to time in seconds
+    seconds = inches / 6.0
+
+    # Apply slight correction
+    seconds = max(0, seconds - 0.25)  # Make sure it doesn't go negative
+
+    # Drive forward at heading 0°, speed 25
+    rvr.drive_with_heading(
+        speed=25,
         heading=0,
-        time_to_drive=seconds
+        flags=0
+    )
+    rear_red_low()
+
+    time.sleep(seconds)
+    
+    # Stop after done
+    rvr.drive_with_heading(
+        speed=0,
+        heading=0,
+        flags=0
     )
     rear_red_full()
-    time.sleep(1)
