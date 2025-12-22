@@ -1,3 +1,6 @@
+from adafruit_servokit import ServoKit
+import time
+
 kit = ServoKit(channels=16)
 
 servo = kit.servo[0]  # channel 0

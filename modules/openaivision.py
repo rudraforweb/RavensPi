@@ -1,3 +1,10 @@
+from picamera2 import Picamera2
+import datetime
+from openai import OpenAI
+import base64
+import os
+from PIL import Image
+
 def encode_image(image_path):
     if not os.path.exists(image_path):
         raise FileNotFoundError(f"Image '{image_path}' not found.")
@@ -6,35 +13,39 @@ def encode_image(image_path):
 
 photos_dir = "photos"
 os.makedirs(photos_dir, exist_ok=True)
-timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-image_path = os.path.join(photos_dir, f"photo_{timestamp}.jpg")
 
-# Maximum resolution for Raspberry Pi Camera Module 2: 3280x2464
-max_width, max_height = 3280, 2464
-square_size = 2464  # Crop to 2464x2464 (centered square)
-raw_image_path = os.path.join(photos_dir, f"photo_{timestamp}_raw.jpg")
+def capture_and_crop_photo():
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    image_path = os.path.join(photos_dir, f"photo_{timestamp}.jpg")
 
-picam2 = Picamera2()
-# Configure camera for max resolution
-camera_config = picam2.create_still_configuration(main={"size": (max_width, max_height)})
-picam2.configure(camera_config)
-picam2.start()
-picam2.capture_file(raw_image_path)
-picam2.close()
+    # Maximum resolution for Raspberry Pi Camera Module 2: 3280x2464
+    max_width, max_height = 3280, 2464
+    square_size = 2464  # Crop to 2464x2464 (centered square)
+    raw_image_path = os.path.join(photos_dir, f"photo_{timestamp}_raw.jpg")
 
-# Crop to center square (2464x2464)
-with Image.open(raw_image_path) as img:
-    width, height = img.size
-    left = (width - square_size) // 2
-    top = (height - square_size) // 2
-    right = left + square_size
-    bottom = top + square_size
-    img_cropped = img.crop((left, top, right, bottom))
-    img_cropped.save(image_path)
+    picam2 = Picamera2()
+    # Configure camera for max resolution
+    camera_config = picam2.create_still_configuration(main={"size": (max_width, max_height)})
+    picam2.configure(camera_config)
+    picam2.start()
+    picam2.capture_file(raw_image_path)
+    picam2.close()
+
+    # Crop to center square (2464x2464)
+    with Image.open(raw_image_path) as img:
+        width, height = img.size
+        left = (width - square_size) // 2
+        top = (height - square_size) // 2
+        right = left + square_size
+        bottom = top + square_size
+        img_cropped = img.crop((left, top, right, bottom))
+        img_cropped.save(image_path)
+
+    return image_path
 
 prompt_text = "Analyze this plant's health in detail. Describe the leaf color, shape, and texture. Note any signs of wilting, yellowing, browning, spots, pests, or dryness. Based on these observations, explain if the plant appears healthy or unhealthy, and recommend whether it needs watering, more sunlight, fertilizer, or other care. Limit your response to 2 sentences."
 
-def generate_plant_report():
+def generate_plant_report(image_path):
     try:
         base64_image = encode_image(image_path)
 
@@ -63,6 +74,7 @@ def generate_plant_report():
         print(response.choices[0].message.content)
 
         # Cleanup: delete raw_image_path and image_path files
+        raw_image_path = image_path.replace(".jpg", "_raw.jpg")
         for file_path in [raw_image_path, image_path]:
             try:
                 os.remove(file_path)

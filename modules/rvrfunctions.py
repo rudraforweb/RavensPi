@@ -1,5 +1,9 @@
-rvr = SpheroRvrObserver()
-leds = LedControlObserver(rvr)
+from sphero_sdk import *
+import time
+import threading
+
+
+
 
 def rear_red_full():
     """Rear LED full red (stopped)"""
@@ -54,31 +58,3 @@ def turn_right_with_signal(amount):
     rear_red_full()
     time.sleep(1)
     rear_red_low()
-
-
-def move_distance(inches):
-    rvr.reset_yaw()
-
-    # 6 inches/sec → convert to time in seconds
-    seconds = inches / 6.0
-
-    # Apply slight correction
-    seconds = max(0, seconds - 0.25)  # Make sure it doesn't go negative
-
-    # Drive forward at heading 0°, speed 25
-    rvr.drive_with_heading(
-        speed=25,
-        heading=0,
-        flags=0
-    )
-    rear_red_low()
-
-    time.sleep(seconds)
-    
-    # Stop after done
-    rvr.drive_with_heading(
-        speed=0,
-        heading=0,
-        flags=0
-    )
-    rear_red_full()

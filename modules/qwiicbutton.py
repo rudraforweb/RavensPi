@@ -1,3 +1,7 @@
+import qwiic_button
+import time
+import sys
+
 brightness = 100
 
 def hold_to_start():
@@ -9,7 +13,7 @@ def hold_to_start():
             file=sys.stderr)
         return
     
-    print("\nButton ready!")
+    print("\nStarting...")
 
     # LED hardware pulsing until button pressed
     brightness = 250    # Max brightness 0–255

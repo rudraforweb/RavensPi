@@ -1,3 +1,7 @@
+from datetime import datetime
+import smtplib
+from email.mime.text import MIMEText
+
 # --- CONFIGURATION ---
 sender_email = "johndoesender@example.com"
 receiver_email = "johndoe@example.com"  # Send to yourself

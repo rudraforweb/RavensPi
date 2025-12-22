@@ -1,3 +1,6 @@
+import serial
+import time
+
 def readline():
     # Open serial connection to XIAO
     ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
