@@ -1,3 +1,8 @@
+"""
+  RavensPi, 2025-2026
+  File: servo.py
+"""
+
 from adafruit_servokit import ServoKit
 import time
 

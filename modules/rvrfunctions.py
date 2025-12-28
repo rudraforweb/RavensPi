@@ -65,6 +65,7 @@ def drive_forward(milliseconds, speed=32):
     """Drive forward with dim rear lights, then stop with full red.
     Time input is in milliseconds.
     """
+    rvr.reset_yaw()
     rear_red_low()
     seconds = milliseconds / 1000.0
     rvr.drive_control.drive_forward_seconds(
@@ -79,6 +80,7 @@ def drive_backward(milliseconds, speed=32):
     """Drive backward with dim rear lights, then stop with full red.
     Time input is in milliseconds.
     """
+    rvr.reset_yaw()
     rear_red_low()
     seconds = milliseconds / 1000.0
     rvr.drive_control.drive_backward_seconds(
