@@ -1,28 +1,42 @@
+
+"""
+  RavensPi, 2025-2026
+  Module/File: rvrfunctions.py
+  Note: Contains both RVR movement and distance sensor functions
+"""
+
+# Imports
 from sphero_sdk import *
 import time
 import threading
-import math
+import qwiic_vl53l1x
 
+# Define RVR and LED control
 rvr = SpheroRvrObserver()
 leds = LedControlObserver(rvr)
 
+# Init distance sensor
+tof = qwiic_vl53l1x.QwiicVL53L1X()
+if tof.sensor_init() is None:
+    print("VL53L1X distance sensor online")
+    
+#Rear LED full red (stopped)
 def rear_red_full():
-    """Rear LED full red (stopped)"""
     leds.set_led_color(RvrLedGroups.brakelight_left, Colors.red)
     leds.set_led_color(RvrLedGroups.brakelight_right, Colors.red)
 
+#Rear LED dim red (moving)
 def rear_red_low():
-    """Rear LED dim red (moving)"""
     leds.set_led_rgb(RvrLedGroups.brakelight_left, 128, 0, 0)
     leds.set_led_rgb(RvrLedGroups.brakelight_right, 128, 0, 0)
-
+    
+#Front headlights white
 def front_white():
-    """Front headlights white"""
     leds.set_led_color(RvrLedGroups.headlight_left, Colors.white)
     leds.set_led_color(RvrLedGroups.headlight_right, Colors.white)
 
+# Uses threading to blink turn signals while turning
 def blink_turn_signal(led_group, rear, times=2, interval=0.5):
-    """Blinks a turn signal LED asynchronously and restores color to white when done."""
     def blink():
         for _ in range(times):
             leds.set_led_color(led_group, Colors.yellow)
@@ -34,12 +48,12 @@ def blink_turn_signal(led_group, rear, times=2, interval=0.5):
         leds.set_led_color(led_group, Colors.white)
     threading.Thread(target=blink, daemon=True).start()
 
+# Turn off all LEDs
 def all_lights_off():
-    """Turn off all LEDs"""
     leds.turn_leds_off()
 
+# Turn left with blinking signal
 def turn_left_with_signal(amount):
-    """Turn left while blinking left signal"""
     rvr.drive_control.reset_heading()
     blink_turn_signal(RvrLedGroups.headlight_left, RvrLedGroups.brakelight_left)
     rvr.drive_control.turn_left_degrees(heading=0, amount=amount)
@@ -48,9 +62,8 @@ def turn_left_with_signal(amount):
     rear_red_full()
 
 
-
+# Turn right with blinking signal
 def turn_right_with_signal(amount):
-    """Turn right while blinking right signal"""
     rvr.drive_control.reset_heading()
     blink_turn_signal(RvrLedGroups.headlight_right, RvrLedGroups.brakelight_right)
     rvr.drive_control.turn_right_degrees(heading=0, amount=amount)
@@ -61,10 +74,8 @@ def turn_right_with_signal(amount):
     rear_red_low()
 
 
-def drive_forward(milliseconds, speed=32):
-    """Drive forward with dim rear lights, then stop with full red.
-    Time input is in milliseconds.
-    """
+# Drive forward in milliseconds
+def drive_forward(milliseconds, speed=25):
     rvr.reset_yaw()
     rear_red_low()
     seconds = milliseconds / 1000.0
@@ -76,10 +87,8 @@ def drive_forward(milliseconds, speed=32):
     rear_red_full()
     time.sleep(1)
 
-def drive_backward(milliseconds, speed=32):
-    """Drive backward with dim rear lights, then stop with full red.
-    Time input is in milliseconds.
-    """
+# Drive backward in milliseconds
+def drive_backward(milliseconds, speed=25):
     rvr.reset_yaw()
     rear_red_low()
     seconds = milliseconds / 1000.0
@@ -90,3 +99,88 @@ def drive_backward(milliseconds, speed=32):
     )
     rear_red_full()
     time.sleep(1)
+
+# Get distance from distance sensor and print
+def get_distance():
+    tof.start_ranging()
+    time.sleep(.005)
+    distance = tof.get_distance()
+    time.sleep(.005)
+    tof.stop_ranging()
+
+    distanceInches = distance / 25.4
+    distanceFeet = distanceInches / 12.0
+
+    print("Distance(mm): %s Distance(ft): %s" % (distance, distanceFeet))
+
+
+# Move forward to target distance using distance sensor
+def move_forward_to_distance(target_mm, step_mm=5, speed=25, tolerance_mm=2, max_steps=50):
+    rvr.reset_yaw()
+    rear_red_low()
+    tof.start_ranging()
+    try:
+        steps = 0
+        current_mm = tof.get_distance()
+        # Check if too close:
+        if current_mm <= target_mm + tolerance_mm:
+            print("Too close, skipping move forward")
+            return
+
+        while True:
+            current_mm = tof.get_distance()
+            if abs(current_mm - target_mm) <= tolerance_mm:
+                break
+            if current_mm < target_mm:
+                print("Too close, stopping")
+                break
+            if steps >= max_steps:
+                print("Timeout: max steps reached")
+                break
+
+            step_time = step_mm / 152.4  
+            rvr.reset_yaw()
+            rvr.drive_control.drive_forward_seconds(speed=speed, heading=0, time_to_drive=step_time)
+            steps += 1
+
+    finally:
+        tof.stop_ranging()
+        rear_red_full()
+        time.sleep(0.2)
+
+
+# Move away from target distance using distance sensor
+def move_backward_to_distance(target_mm, step_mm=5, speed=30, tolerance_mm=2, max_steps=50):
+    rvr.reset_yaw()
+    rear_red_low()
+    tof.start_ranging()
+    try:
+        steps = 0
+        current_mm = tof.get_distance()
+        # Check if already too far:
+        if current_mm >= target_mm - tolerance_mm:
+            print("Too far, skipping move backward")
+            return
+
+        while True:
+            current_mm = tof.get_distance()
+            if abs(current_mm - target_mm) <= tolerance_mm:
+                break
+            if current_mm > target_mm:
+                print("Too far, stopping")
+                break
+            if steps >= max_steps:
+                print("Timeout: max steps reached")
+                break
+
+            step_time = step_mm / 152.4
+            rvr.reset_yaw()
+            rvr.drive_control.drive_backward_seconds(speed=speed, heading=0, time_to_drive=step_time)
+            steps += 1
+
+    finally:
+        tof.stop_ranging()
+        rear_red_full()
+        time.sleep(0.2)
+        
+# Note: used code from both the Sphero RVR SDK and Sparkfun VL53L1X Library for reference

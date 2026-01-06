@@ -1,6 +1,11 @@
+
+// RavensPi, 2025-2026
+// External Module/File: xiaosamd21.ino
+
 // Soil Moisture Serial Output
+// Run on XIAO SAMD21
 // Continuously prints soil moisture sensor values to Serial for Raspberry Pi
-// RavensPi
+
 
 const int soilPin = A10;  // Analog pin connected to the soil sensor
 

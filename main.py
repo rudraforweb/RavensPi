@@ -6,60 +6,59 @@
   Sunlake Academy of Math and Science
   File: main.py
 """
-
+# Inital imports
 import time
-from modules.lumalcd import init_lcd, show_loading_screen
+from modules.lumalcd import *
 
-# Initialize LCD and show loading screen
+# Initialize LCD and RVR, and show loading screen
 device, font = init_lcd()
-show_loading_screen(device, font, message="Starting RVR...")
-from modules.rvrfunctions import rvr, leds
+show_information(device, font, message="Starting RVR...")
+from modules.rvrfunctions import rvr # Import RVR for wake
 rvr.wake()
 time.sleep(1)
 print("RVR Awake")
 
 # Import remaining modules after loading screen and RVR attempt
-from modules.rvrfunctions import *
-show_loading_screen(device, font, message="Loading GPT vision...")
+from modules.rvrfunctions import * # Import rest of RVR functions
+show_information(device, font, message="Loading GPT vision...")
 #from modules.openaivision import *
-show_loading_screen(device, font, message="Loading other services...")
+show_information(device, font, message="Loading other services...")
 from modules.servo import *
 from modules.qwiicbutton import *
 from modules.xiao import *
 from modules.email import *
 
-
 # Start program with button hold
-show_loading_screen(device, font, message="Ready. Hold button for 1 second to start.")
+'''
+show_information(device, font, message="Ready. Hold button for 1 second to start.")
 hold_to_start()
-show_loading_screen(device, font, message="Starting...")
+show_information(device, font, message="Starting...")
 '''
-# example loop
-for i in range(3):
-  drive_forward(1300) # inital drive forward
-  # INSERT: take camera picture
-  turn_left_with_signal(90) # turn toward plant
-  drive_forward(600) # drive forward to plant
-  # INSERT: inject soil moisture sensor into soil
-  # INSERT: send both data to GPT-4o for analysis
-  # INSERT: get GPT-4o response and water plant based on response
-  time.sleep(1) 
-  drive_backward(600) # drive backward to route
-  turn_right_with_signal(90) # turn back to route
-'''
+
+
+# Main loop for plant
 def check_plant():
   # INSERT: take camera picture
   turn_left_with_signal(90) # turn toward plant
-  drive_forward(600) # drive forward to plant
+  print("Before moving forward")
+  get_distance()
+  move_forward_to_distance(50) # drive forward to plant
+  print("After moving forward")
+  get_distance()
   # INSERT: inject soil moisture sensor into soil
   # INSERT: send both data to GPT-4o for analysis
   # INSERT: get GPT-4o response and water plant based on response
   time.sleep(1) 
-  drive_backward(600) # drive backward to route
+  print("Before moving backward")
+  get_distance()
+  move_backward_to_distance(175) # drive backward to route
+  print("After moving backward")
+  get_distance()
   turn_right_with_signal(90) # turn back to route
+  time.sleep(1)
 
 check_plant()
-drive_forward(1000)
+drive_forward(1250)
 check_plant()
-drive_forward(1000)
+drive_forward(1250)
 check_plant()

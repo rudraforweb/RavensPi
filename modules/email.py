@@ -1,21 +1,30 @@
+
+"""
+  RavensPi, 2025-2026
+  Module/File: email.py
+  Note: An app password from a Google Account is required to send email
+"""
+
+# Imports
 from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
 
-# --- CONFIGURATION ---
+# Configuration
 sender_email = "johndoesender@example.com"
 receiver_email = "johndoe@example.com"  # Send to yourself
 app_password = "your_app_specific_password_here"  # Use an app-specific password
 subject = f"Plant Progress Report: {datetime.now().strftime('%m-%d-%Y')}"
-body = "Attached are today’s plant images with AI-generated status reports.\n\n- Plant 1: Needs water\n- Plant 2: Healthy\n- Plant 3: Possible overwatering"
+body = "Attached are today’s plant images with status reports.\n\n- Plant 1: Needs water\n- Plant 2: Healthy\n- Plant 3: Possible overwatering"
 
 
-# --- EMAIL SETUP ---
+# Email setup
 msg = MIMEText(body)
 msg["Subject"] = subject
 msg["From"] = sender_email
 msg["To"] = receiver_email
 
+# Send email function
 def send_email_with_attachments():
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:

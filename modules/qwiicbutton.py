@@ -1,3 +1,9 @@
+
+"""
+  RavensPi, 2025-2026
+  Module/File: qwiicbutton.py
+"""
+
 import qwiic_button
 import time
 import sys
@@ -13,14 +19,14 @@ def hold_to_start():
             file=sys.stderr)
         return
     
-    print("\nStarting...")
+    print("\nReady to start. Hold the button for 1 second to begin.")
 
-    # LED hardware pulsing until button pressed
-    brightness = 250    # Max brightness 0–255
-    cycle_time = 1000   # Time for full pulse cycle (ms)
-    off_time = 0        # Time off between pulses (ms)
+    # Pulse LED variables
+    brightness = 250    
+    cycle_time = 1000  
+    off_time = 0        
 
-    # Start pulsing using hardware
+    # Start pulsing:
     my_button.LED_config(brightness, cycle_time, off_time)
 
     press_count = 0
@@ -38,3 +44,6 @@ def hold_to_start():
             press_count = 0
 
         time.sleep(0.1)
+        
+        
+# Note: used code from Sparkfun Qwiic Button Python Library for reference

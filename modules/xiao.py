@@ -1,6 +1,13 @@
+"""
+  RavensPi, 2025-2026
+  Module/File: xiao.py
+"""
+
+# Imports
 import serial
 import time
 
+# Read soil moisture sensor data from XIAO
 def readline():
     # Open serial connection to XIAO
     ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
