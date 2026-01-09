@@ -45,6 +45,12 @@ def send_to_GPT():
 
 plant1 = send_to_GPT()
 print(plant1)
+plant2 = send_to_GPT()
+print(plant2)
+plant3 = send_to_GPT()
+print(plant3)
+print("Sending email...")
+send_email(plant1=plant1, plant2=plant2, plant3=plant3)
 '''
 # Main loop for plant
 def check_plant():
@@ -73,3 +79,4 @@ check_plant()
 drive_forward(1250)
 check_plant()
 '''
+show_information(device, font, message="Finished.")

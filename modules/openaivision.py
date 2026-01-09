@@ -43,11 +43,11 @@ def take_photo():
 # Generate plant report
 def generate_plant_report(image_path, soil_percent):
     try:
-        prompt_text = f"Analyze this plant's health in detail. Soil moisture is {soil_percent:.1f}%, say 'Soil Moisture is (the soil moisture)' in your response. Describe the leaf color, shape, and texture. Note any signs of wilting, yellowing, browning, spots, pests, or dryness. Based on these observations, explain if the plant appears healthy or unhealthy. Limit your response to 2 sentences."
+        prompt_text = f"Analyze this plant's health in detail. Soil moisture is {soil_percent:.1f}%, say Soil Moisture is (the soil moisture), in your response. Describe the leaf color, shape, and texture. Note any signs of wilting, yellowing, browning, spots, pests, or dryness. Based on these observations, explain if the plant appears healthy or unhealthy. Limit your response to 2 sentences."
 
         base64_image = encode_image(image_path)
 
-        client = OpenAI(api_key="put_your_openai_api_key_here") # VALID OPENAI KEY REQUIRED
+        client = OpenAI(api_key="your_openapi_key_here") # VALID OPENAI KEY REQUIRED
 
         # Send image and prompt to GPT-4o-mini
         response = client.chat.completions.create(

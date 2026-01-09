@@ -11,22 +11,18 @@ from email.mime.text import MIMEText
  
 
 # Configuration
-sender_email = "johndoesender@example.com"
-receiver_email = "johndoe@example.com"  # Send to yourself
-app_password = "your_app_specific_password_here"  # Use an app-specific password
+sender_email = "examplesender@example.com"
+receiver_email = "examplereceiver@example.com"  # Send to yourself
+app_password = "google_app_password_here"
 subject = f"Plant Progress Report: {datetime.now().strftime('%m-%d-%Y')}"
 
-
-# Email setup
-msg = MIMEText(body)
-msg["Subject"] = subject
-msg["From"] = sender_email
-msg["To"] = receiver_email
-
 # Send email function
-def send_email_with_attachments():
-    from main import plant1, plant2, plant3  # Import plant reports from main
-    body = f"Attached are today’s plant reports by GPT-4o-mini. Every plant has been watered. \n\n- Plant 1: {plant1}\n- Plant 2: {plant2}\n- Plant 3: {plant3}"
+def send_email(plant1, plant2, plant3):
+    body = f"Attached are today’s plant reports by GPT-4o-mini. Every plant has been watered. \n\n\n- Plant 1: {plant1}\n\n- Plant 2: {plant2}\n\n- Plant 3: {plant3}"
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = sender_email
+    msg["To"] = receiver_email
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender_email, app_password)
