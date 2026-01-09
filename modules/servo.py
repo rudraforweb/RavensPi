@@ -7,30 +7,42 @@
 from adafruit_servokit import ServoKit
 import time
 
-# Define servo kit
-kit = ServoKit(channels=16)
-
-# Define servo for soil moisture sensor
-servo = kit.servo[0]
+# Global placeholders
+kit = None
 servo_channel = 0
 
-# Main function: step is degrees per step, delay is time between steps
-def move_servo(target_angle, step=3, delay=0.02):
-    # Start from current angle, or 0 if undefined
+def init_servos(channels=16):
+    """Initialize the ServoKit and define the servo channel."""
+    global kit, servo_channel
+    kit = ServoKit(channels=channels)
+    servo_channel = 0  # adjust if your servo is on a different channel
+
+# Main function: move servo directly to target angle
+def move_servo(target_angle):
+    global kit, servo_channel
+    if kit is None:
+        raise RuntimeError("ServoKit not initialized. Call init_servos() first.")
+    kit.servo[servo_channel].angle = target_angle
+
+# Slowly move the servo from its current angle to the target angle using steps
+def slowly_move_servo(target_angle, step=1, delay=0.02):
+    global kit, servo_channel
+    if kit is None:
+        raise RuntimeError("ServoKit not initialized. Call init_servos() first.")
+
     current_angle = kit.servo[servo_channel].angle
+
     if current_angle is None:
-        current_angle = 0
+        kit.servo[servo_channel].angle = target_angle
+        return
 
-    # Determine direction of motion:
     if current_angle < target_angle:
-        angles = range(int(current_angle), int(target_angle)+1, step) # Servo is below target: step forward
+        angles = range(int(current_angle), int(target_angle) + 1, step)
     else:
-        angles = range(int(current_angle), int(target_angle)-1, -step) # Servo is above target: step back
+        angles = range(int(current_angle), int(target_angle) - 1, -step)
 
-    # Move servo to each value in range
     for angle in angles:
         kit.servo[servo_channel].angle = angle
         time.sleep(delay)
 
-    # Final angle set
     kit.servo[servo_channel].angle = target_angle

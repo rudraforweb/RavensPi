@@ -21,21 +21,31 @@ print("RVR Awake")
 # Import remaining modules after loading screen and RVR attempt
 from modules.rvrfunctions import * # Import rest of RVR functions
 show_information(device, font, message="Loading GPT vision...")
-#from modules.openaivision import *
+from modules.openaivision import *
 show_information(device, font, message="Loading other services...")
 from modules.servo import *
 from modules.qwiicbutton import *
 from modules.xiao import *
 from modules.email import *
 
+
+# use XIAO output as soil moisture percentage
+
 # Start program with button hold
-'''
 show_information(device, font, message="Ready. Hold button for 1 second to start.")
 hold_to_start()
 show_information(device, font, message="Starting...")
+
+
+def send_to_GPT():
+  from modules.xiao import readline
+  soil_percent = readline() 
+  report = analyze_plant(soil_percent)
+  return report
+
+plant1 = send_to_GPT()
+print(plant1)
 '''
-
-
 # Main loop for plant
 def check_plant():
   # INSERT: take camera picture
@@ -62,3 +72,4 @@ drive_forward(1250)
 check_plant()
 drive_forward(1250)
 check_plant()
+'''

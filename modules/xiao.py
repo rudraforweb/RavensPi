@@ -15,11 +15,23 @@ def readline():
 
     ser.flush()
 
-    # Read one line from XIAO
-    line = ser.readline().decode().strip()
-    if line:
-        print("XIAO says:", line)
-    else:
-        print("No response received from XIAO.")
+    dry_air = 850
+    wet_water = 315
 
-    ser.close()
+    while True:
+        # Read one line from XIAO
+        line = ser.readline().decode().strip()
+        if line:
+            try:
+                value = float(line)
+                # Calculate percentage
+                percentage = (dry_air - value) / (dry_air - wet_water) * 100
+                # Clamp between 0 and 100
+                percentage = max(0, min(100, percentage))
+                print("Value:", value)
+                print("Percentage:", percentage)
+                return percentage
+            except ValueError:
+                print("Received non-numeric data from XIAO, retrying...")
+        else:
+            print("No response received from XIAO, retrying...")

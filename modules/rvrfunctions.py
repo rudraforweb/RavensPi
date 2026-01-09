@@ -1,4 +1,3 @@
-
 """
   RavensPi, 2025-2026
   Module/File: rvrfunctions.py
@@ -11,15 +10,12 @@ import time
 import threading
 import qwiic_vl53l1x
 
+tof = None
+
 # Define RVR and LED control
 rvr = SpheroRvrObserver()
 leds = LedControlObserver(rvr)
 
-# Init distance sensor
-tof = qwiic_vl53l1x.QwiicVL53L1X()
-if tof.sensor_init() is None:
-    print("VL53L1X distance sensor online")
-    
 #Rear LED full red (stopped)
 def rear_red_full():
     leds.set_led_color(RvrLedGroups.brakelight_left, Colors.red)
@@ -34,6 +30,20 @@ def rear_red_low():
 def front_white():
     leds.set_led_color(RvrLedGroups.headlight_left, Colors.white)
     leds.set_led_color(RvrLedGroups.headlight_right, Colors.white)
+
+def init_tof():
+    global tof
+    tof = qwiic_vl53l1x.QwiicVL53L1X()
+    try:
+        if tof.sensor_init() is None:
+            print("VL53L1X distance sensor online")
+            return True
+        else:
+            print("VL53L1X init failed")
+            return False
+    except OSError as e:
+        print(f"VL53L1X I2C error: {e}")
+        return False
 
 # Uses threading to blink turn signals while turning
 def blink_turn_signal(led_group, rear, times=2, interval=0.5):
@@ -103,15 +113,11 @@ def drive_backward(milliseconds, speed=25):
 # Get distance from distance sensor and print
 def get_distance():
     tof.start_ranging()
-    time.sleep(.005)
+    time.sleep(0.005)
     distance = tof.get_distance()
-    time.sleep(.005)
+    time.sleep(0.005)
     tof.stop_ranging()
-
-    distanceInches = distance / 25.4
-    distanceFeet = distanceInches / 12.0
-
-    print("Distance(mm): %s Distance(ft): %s" % (distance, distanceFeet))
+    return distance
 
 
 # Move forward to target distance using distance sensor
@@ -121,14 +127,14 @@ def move_forward_to_distance(target_mm, step_mm=5, speed=25, tolerance_mm=2, max
     tof.start_ranging()
     try:
         steps = 0
-        current_mm = tof.get_distance()
+        current_mm = get_distance()
         # Check if too close:
         if current_mm <= target_mm + tolerance_mm:
             print("Too close, skipping move forward")
             return
 
         while True:
-            current_mm = tof.get_distance()
+            current_mm = get_distance()
             if abs(current_mm - target_mm) <= tolerance_mm:
                 break
             if current_mm < target_mm:
@@ -156,14 +162,14 @@ def move_backward_to_distance(target_mm, step_mm=5, speed=30, tolerance_mm=2, ma
     tof.start_ranging()
     try:
         steps = 0
-        current_mm = tof.get_distance()
+        current_mm = get_distance()
         # Check if already too far:
         if current_mm >= target_mm - tolerance_mm:
             print("Too far, skipping move backward")
             return
 
         while True:
-            current_mm = tof.get_distance()
+            current_mm = get_distance()
             if abs(current_mm - target_mm) <= tolerance_mm:
                 break
             if current_mm > target_mm:

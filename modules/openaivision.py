@@ -11,6 +11,7 @@ import base64
 import os
 from PIL import Image
 
+
 # Encode image to base64
 def encode_image(image_path):
     if not os.path.exists(image_path): # Check for image
@@ -39,15 +40,14 @@ def take_photo():
 
     return image_path
 
-# Prompt to GPT 4o-mini
-prompt_text = "Analyze this plant's health in detail. Describe the leaf color, shape, and texture. Note any signs of wilting, yellowing, browning, spots, pests, or dryness. Based on these observations, explain if the plant appears healthy or unhealthy, and recommend whether it needs watering, more sunlight, fertilizer, or other care. Limit your response to 2 sentences."
-
 # Generate plant report
-def generate_plant_report(image_path):
+def generate_plant_report(image_path, soil_percent):
     try:
+        prompt_text = f"Analyze this plant's health in detail. Soil moisture is {soil_percent:.1f}%, say 'Soil Moisture is (the soil moisture)' in your response. Describe the leaf color, shape, and texture. Note any signs of wilting, yellowing, browning, spots, pests, or dryness. Based on these observations, explain if the plant appears healthy or unhealthy. Limit your response to 2 sentences."
+
         base64_image = encode_image(image_path)
 
-        client = OpenAI(api_key="place_your_openai_api_key_here") # VALID OPENAI KEY REQUIRED
+        client = OpenAI(api_key="put_your_openai_api_key_here") # VALID OPENAI KEY REQUIRED
 
         # Send image and prompt to GPT-4o-mini
         response = client.chat.completions.create(
@@ -70,17 +70,15 @@ def generate_plant_report(image_path):
         )
 
         # Return result
-        print("\nGPT-4o-mini says:\n")
-        print(response.choices[0].message.content)
+        #print("\nGPT-4o-mini says:\n")
+        #print(response.choices[0].message.content)
         
 
         # Cleanup
-        raw_image_path = image_path.replace(".jpg", "_raw.jpg")
-        for file_path in [raw_image_path, image_path]:
-            try:
-                os.remove(file_path)
-            except Exception:
-                pass
+        try:
+            os.remove(image_path)
+        except Exception:
+            pass
             
         return response.choices[0].message.content
 
@@ -89,7 +87,9 @@ def generate_plant_report(image_path):
 
 
 # Main function
-def analyze_plant():
+def analyze_plant(soil_percent):
     image_path = take_photo()
-    report = generate_plant_report(image_path)
+    report = generate_plant_report(image_path, soil_percent)
+    
+    
     return report
