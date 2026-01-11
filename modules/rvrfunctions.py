@@ -10,7 +10,6 @@ import time
 import threading
 import qwiic_vl53l1x
 
-tof = None
 
 # Define RVR and LED control
 rvr = SpheroRvrObserver()
@@ -85,7 +84,7 @@ def turn_right_with_signal(amount):
 
 
 # Drive forward in milliseconds
-def drive_forward(milliseconds, speed=25):
+def drive_forward(milliseconds, speed=40):
     rvr.reset_yaw()
     rear_red_low()
     seconds = milliseconds / 1000.0
@@ -98,7 +97,7 @@ def drive_forward(milliseconds, speed=25):
     time.sleep(1)
 
 # Drive backward in milliseconds
-def drive_backward(milliseconds, speed=25):
+def drive_backward(milliseconds, speed=40):
     rvr.reset_yaw()
     rear_red_low()
     seconds = milliseconds / 1000.0
@@ -121,7 +120,7 @@ def get_distance():
 
 
 # Move forward to target distance using distance sensor
-def move_forward_to_distance(target_mm, step_mm=5, speed=25, tolerance_mm=2, max_steps=50):
+def move_forward_to_distance(target_mm, step_mm=5, speed=40, tolerance_mm=2, max_steps=50):
     rvr.reset_yaw()
     rear_red_low()
     tof.start_ranging()
@@ -152,7 +151,7 @@ def move_forward_to_distance(target_mm, step_mm=5, speed=25, tolerance_mm=2, max
     finally:
         tof.stop_ranging()
         rear_red_full()
-        time.sleep(0.2)
+        time.sleep(0.05)
 
 
 # Move away from target distance using distance sensor
@@ -187,6 +186,8 @@ def move_backward_to_distance(target_mm, step_mm=5, speed=30, tolerance_mm=2, ma
     finally:
         tof.stop_ranging()
         rear_red_full()
-        time.sleep(0.2)
+        time.sleep(0.05)
         
+        
+       
 # Note: used code from both the Sphero RVR SDK and Sparkfun VL53L1X Library for reference

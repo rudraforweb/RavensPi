@@ -47,7 +47,7 @@ def generate_plant_report(image_path, soil_percent):
 
         base64_image = encode_image(image_path)
 
-        client = OpenAI(api_key="your_openapi_key_here") # VALID OPENAI KEY REQUIRED
+        client = OpenAI(api_key="") # VALID OPENAI KEY REQUIRED
 
         # Send image and prompt to GPT-4o-mini
         response = client.chat.completions.create(
@@ -85,11 +85,11 @@ def generate_plant_report(image_path, soil_percent):
     except Exception as e:
         print(f"Error: {e}")
 
+def capture_plant_image():
+    image_path = take_photo()
+    return image_path
 
 # Main function
-def analyze_plant(soil_percent):
-    image_path = take_photo()
+def analyze_plant(soil_percent, image_path):
     report = generate_plant_report(image_path, soil_percent)
-    
-    
     return report

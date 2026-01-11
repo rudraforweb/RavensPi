@@ -27,9 +27,12 @@ from modules.servo import *
 from modules.qwiicbutton import *
 from modules.xiao import *
 from modules.email import *
+from modules.pump import *
 
 
-# use XIAO output as soil moisture percentage
+init_tof() 
+init_servos()
+time.sleep(1)
 
 # Start program with button hold
 show_information(device, font, message="Ready. Hold button for 1 second to start.")
@@ -37,46 +40,48 @@ hold_to_start()
 show_information(device, font, message="Starting...")
 
 
-def send_to_GPT():
+def send_to_GPT(image_path=None):
   from modules.xiao import readline
   soil_percent = readline() 
-  report = analyze_plant(soil_percent)
+  report = analyze_plant(soil_percent, image_path)
   return report
 
-plant1 = send_to_GPT()
-print(plant1)
-plant2 = send_to_GPT()
-print(plant2)
-plant3 = send_to_GPT()
-print(plant3)
-print("Sending email...")
-send_email(plant1=plant1, plant2=plant2, plant3=plant3)
-'''
+
+
 # Main loop for plant
-def check_plant():
-  # INSERT: take camera picture
+def check_plant(plant_id):
+  image_path = capture_plant_image() # take photo
+  time.sleep(1)
   turn_left_with_signal(90) # turn toward plant
   print("Before moving forward")
   get_distance()
-  move_forward_to_distance(50) # drive forward to plant
+  move_forward_to_distance(40) # drive forward to plant
   print("After moving forward")
   get_distance()
-  # INSERT: inject soil moisture sensor into soil
-  # INSERT: send both data to GPT-4o for analysis
-  # INSERT: get GPT-4o response and water plant based on response
-  time.sleep(1) 
+  move_servo(75) # insert sensor
+  report = send_to_GPT(image_path=image_path) # get report
+  slowly_move_servo(150) # remove sensor
+  pump_water(1) # water plant
   print("Before moving backward")
   get_distance()
-  move_backward_to_distance(175) # drive backward to route
+  move_backward_to_distance(165) # drive backward to route
   print("After moving backward")
   get_distance()
   turn_right_with_signal(90) # turn back to route
   time.sleep(1)
+  return report
 
-check_plant()
-drive_forward(1250)
-check_plant()
-drive_forward(1250)
-check_plant()
-'''
+plant1 = check_plant(1)
+drive_forward(1150)
+plant2 = check_plant(2)
+drive_forward(1150)
+plant3 = check_plant(3)
+
+print("Report of Plant 1:\n", plant1.encode('utf-8', errors='replace').decode('utf-8'))
+print("Report of Plant 2:\n", plant2.encode('utf-8', errors='replace').decode('utf-8'))
+print("Report of Plant 3:\n", plant3.encode('utf-8', errors='replace').decode('utf-8'))
+print("Sending email...")
+show_information(device, font, message="Sending...")
+send_email(plant1=plant1, plant2=plant2, plant3=plant3)
+
 show_information(device, font, message="Finished.")

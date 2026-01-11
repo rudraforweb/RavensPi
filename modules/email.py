@@ -11,9 +11,9 @@ from email.mime.text import MIMEText
  
 
 # Configuration
-sender_email = "examplesender@example.com"
-receiver_email = "examplereceiver@example.com"  # Send to yourself
-app_password = "google_app_password_here"
+sender_email = "cool"
+receiver_email = "wow"
+app_password = "app_password_here"  # REPLACE WITH VALID APP PASSWORD
 subject = f"Plant Progress Report: {datetime.now().strftime('%m-%d-%Y')}"
 
 # Send email function
