@@ -7,7 +7,7 @@
 from adafruit_servokit import ServoKit
 import time
 
-# Global placeholders
+# variables
 kit = None
 servo_channel = 0
 
@@ -15,7 +15,7 @@ def init_servos(channels=16):
     """Initialize the ServoKit and define the servo channel."""
     global kit, servo_channel
     kit = ServoKit(channels=channels)
-    servo_channel = 0  # adjust if your servo is on a different channel
+    servo_channel = 0 
 
 # Main function: move servo directly to target angle
 def move_servo(target_angle):

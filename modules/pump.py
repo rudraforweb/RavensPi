@@ -1,15 +1,20 @@
+"""
+  RavensPi, 2025-2026
+  Module/File: pump.py
+"""
+
 import RPi.GPIO as GPIO
 import time
 
-# GPIO pin connected to MOSFET gate
+# pin
 PUMP_PIN = 13 
 
-# Setup pins once at module load (after setting mode)
+# setup gpio
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(PUMP_PIN, GPIO.OUT)
 
-
+# main function
 def pump_water(duration=1):
     print("Pumping water...")
     GPIO.output(PUMP_PIN, GPIO.HIGH)

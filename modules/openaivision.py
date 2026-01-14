@@ -49,7 +49,7 @@ def generate_plant_report(image_path, soil_percent):
 
         client = OpenAI(api_key="") # VALID OPENAI KEY REQUIRED
 
-        # Send image and prompt to GPT-4o-mini
+        # send image and prompt to GPT-4o-mini
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -69,12 +69,8 @@ def generate_plant_report(image_path, soil_percent):
             max_tokens=300
         )
 
-        # Return result
-        #print("\nGPT-4o-mini says:\n")
-        #print(response.choices[0].message.content)
-        
 
-        # Cleanup
+        # cleanup
         try:
             os.remove(image_path)
         except Exception:
