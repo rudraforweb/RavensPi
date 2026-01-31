@@ -49,7 +49,7 @@ def send_to_GPT(image_path=None):
 
 
 # Main loop for plant
-def check_plant(plant_id):
+def check_plant():
   image_path = capture_plant_image() # take photo
   time.sleep(1)
   turn_left_with_signal(90) # turn toward plant
@@ -71,11 +71,11 @@ def check_plant(plant_id):
   time.sleep(1)
   return report
 
-plant1 = check_plant(1)
+plant1 = check_plant()
 drive_forward(1150)
-plant2 = check_plant(2)
+plant2 = check_plant()
 drive_forward(1150)
-plant3 = check_plant(3)
+plant3 = check_plant()
 
 print("Report of Plant 1:\n", plant1.encode('utf-8', errors='replace').decode('utf-8'))
 print("Report of Plant 2:\n", plant2.encode('utf-8', errors='replace').decode('utf-8'))
