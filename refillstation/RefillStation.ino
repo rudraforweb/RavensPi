@@ -7,6 +7,7 @@
 #define relayPin 6
 #define switchPin 9
 #define waterSensorPin A0
+#define buzzerPin 2
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -65,6 +66,7 @@ uint8_t Ravens_Pi_Icon[] PROGMEM = {
 void setup() {
   pinMode(relayPin, OUTPUT);
   pinMode(switchPin, INPUT_PULLUP);
+  pinMode(buzzerPin, OUTPUT);
   digitalWrite(relayPin, LOW);
 
   Serial.begin(9600);
@@ -91,6 +93,7 @@ void setup() {
   myOLED.erase();
   myOLED.display();
   displayText("Ready.");
+  doubleBeep();
 
   delay(1000);
 }
@@ -100,6 +103,7 @@ void loop() {
 
   if (digitalRead(switchPin) == LOW) {
     Serial.println("Switch held!");
+    beep(150);
     displayText("Robot Detected");
 
     int waterLevel = analogRead(waterSensorPin);
@@ -110,14 +114,19 @@ void loop() {
       Serial.println("Refill station, it is low on water");
       for (int i = 0; i < 5; i++) {
         displayText("Station low");
+        beep(150);
         delay(1000);
         displayText("Refill station");
+        beep(150);
         delay(1000);
       }
       displayText("Ready.");
+      doubleBeep();
     } else {
+      beep(150);
       pourWater();
       displayText("Ready.");
+      doubleBeep();
     }
 
     while (digitalRead(switchPin) == LOW) {
@@ -130,6 +139,7 @@ void loop() {
 
 // Pour about 1 cup of water
 void pourWater() {
+  delay(3000);
   displayText("Pouring Water");
   digitalWrite(relayPin, HIGH);
   delay(10500);
@@ -152,4 +162,17 @@ void displayText(const char* text) {
   myOLED.text(xdisp0, ydisp0, text, 1);
 
   myOLED.display();
+}
+
+
+void beep(int duration) {
+  tone(buzzerPin, 1000, duration);
+  delay(duration);
+  noTone(buzzerPin);
+}
+
+void doubleBeep() {
+  beep(150);
+  delay(100);
+  beep(150);
 }
