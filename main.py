@@ -80,9 +80,9 @@ drive_forward(750)
 plant3 = check_plant()
 
 time.sleep(1)
-drive_forward(400)
+move_forward_to_distance(122)
+drive_forward(200)
 time.sleep(10)
-drive_backward(400)
 move_servo(160)
 
 print("Report of Plant 1:\n", plant1.encode('utf-8', errors='replace').decode('utf-8'))
