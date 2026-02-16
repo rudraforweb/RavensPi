@@ -39,14 +39,11 @@ show_information(device, font, message="Ready. Hold button for 1 second to start
 hold_to_start()
 show_information(device, font, message="Starting...")
 
-
 def send_to_GPT(image_path=None):
   from modules.xiao import readline
   soil_percent = readline() 
   report = analyze_plant(soil_percent, image_path)
   return report
-
-
 
 # Main loop for plant
 def check_plant():
@@ -55,27 +52,38 @@ def check_plant():
   turn_left_with_signal(90) # turn toward plant
   print("Before moving forward")
   get_distance()
-  move_forward_to_distance(40) # drive forward to plant
+  move_forward_to_distance(35) # drive forward to plant
   print("After moving forward")
   get_distance()
   move_servo(75) # insert sensor
   report = send_to_GPT(image_path=image_path) # get report
   slowly_move_servo(150) # remove sensor
+  time.sleep(1)
+  move_servo(150)
+  move_backward_to_distance(45)
   pump_water(1) # water plant
+  init_tof()
   print("Before moving backward")
   get_distance()
   move_backward_to_distance(165) # drive backward to route
   print("After moving backward")
   get_distance()
   turn_right_with_signal(90) # turn back to route
+  move_servo(160)
   time.sleep(1)
   return report
 
 plant1 = check_plant()
-drive_forward(1150)
+drive_forward(750)
 plant2 = check_plant()
-drive_forward(1150)
+drive_forward(750)
 plant3 = check_plant()
+
+time.sleep(1)
+drive_forward(400)
+time.sleep(10)
+drive_backward(400)
+move_servo(160)
 
 print("Report of Plant 1:\n", plant1.encode('utf-8', errors='replace').decode('utf-8'))
 print("Report of Plant 2:\n", plant2.encode('utf-8', errors='replace').decode('utf-8'))

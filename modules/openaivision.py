@@ -5,6 +5,7 @@
 
 # Imports
 from picamera2 import Picamera2
+from libcamera import Transform
 import datetime
 from openai import OpenAI
 import base64
@@ -32,7 +33,7 @@ def take_photo():
 
     # Capture image
     picam2 = Picamera2()
-    camera_config = picam2.create_still_configuration(main={"size": (max_width, max_height)})
+    camera_config = picam2.create_still_configuration(main={"size": (max_width, max_height)},transform=Transform(vflip=True, hflip=True))
     picam2.configure(camera_config)
     picam2.start()
     picam2.capture_file(image_path)
