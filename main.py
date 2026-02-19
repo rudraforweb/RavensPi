@@ -48,6 +48,7 @@ def send_to_GPT(image_path=None): # function that shows GPT the image and makes 
 # Main loop for plant
 def check_plant():
   image_path = capture_plant_image() # take photo
+  show_information(device, font, message="Capturing picture")
   time.sleep(1)
   turn_left_with_signal(90) # turn toward plant
   print("Before moving forward")
@@ -55,9 +56,11 @@ def check_plant():
   move_forward_to_distance(35) # drive forward to plant
   print("After moving forward")
   get_distance()
+  show_information(device, font, message="Reading soil moisture level...")
   move_servo(75) # insert sensor
   report = send_to_GPT(image_path=image_path) # get report
   slowly_move_servo(150) # remove sensor
+  show_information(device, font, message="Watering plant")
   time.sleep(1)
   move_servo(150)
   move_backward_to_distance(45)
@@ -65,6 +68,7 @@ def check_plant():
   init_tof()
   print("Before moving backward")
   get_distance()
+  show_information(device, font, message="Moving to next plant")
   move_backward_to_distance(165) # drive backward to route
   print("After moving backward")
   get_distance()
@@ -73,20 +77,25 @@ def check_plant():
   time.sleep(1)
   return report
 
+# run for three plants
 plant1 = check_plant()
 drive_forward(750)
 plant2 = check_plant()
 drive_forward(750)
 plant3 = check_plant()
 
+# refill water tank
 time.sleep(1)
+show_information(device, font, message="Heading to refill station")
 move_forward_to_distance(122)
 drive_forward(400)
+show_information(device, font, message="Refilling water...")
 time.sleep(10)
 move_servo(160)
 drive_backward(500)
 move_backward_to_distance(500)
-move_servo(160) # turns servo to detect moisture
+move_servo(160)
+
 
 print("Report of Plant 1:\n", plant1.encode('utf-8', errors='replace').decode('utf-8'))
 print("Report of Plant 2:\n", plant2.encode('utf-8', errors='replace').decode('utf-8'))
