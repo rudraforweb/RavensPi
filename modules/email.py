@@ -18,7 +18,7 @@ subject = f"Plant Progress Report: {datetime.now().strftime('%m-%d-%Y')}"
 
 # Send email function
 def send_email(plant1, plant2, plant3):
-    # msg
+    # msg means message
     body = f"Attached are today’s plant reports by GPT-4o-mini. Every plant has been watered. \n\n\n- Plant 1: {plant1}\n\n- Plant 2: {plant2}\n\n- Plant 3: {plant3}"
     msg = MIMEText(body)
     msg["Subject"] = subject
@@ -31,4 +31,4 @@ def send_email(plant1, plant2, plant3):
             server.sendmail(sender_email, receiver_email, msg.as_string())
         print("Email sent successfully.")
     except Exception as e:
-        print(f"Failed to send email: {e}")
+        print(f"Failed to send email: {e}") # if the message cant send, it prints it to the console and displays it 

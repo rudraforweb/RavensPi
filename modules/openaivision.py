@@ -2,7 +2,7 @@
   RavensPi, 2025-2026
   Module/File: openaivision.py
 """
-
+# This code is for chatGPT analyising the image and sending back an email
 # Imports
 from picamera2 import Picamera2
 from libcamera import Transform

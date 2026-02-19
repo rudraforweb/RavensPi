@@ -39,7 +39,7 @@ show_information(device, font, message="Ready. Hold button for 1 second to start
 hold_to_start()
 show_information(device, font, message="Starting...")
 
-def send_to_GPT(image_path=None):
+def send_to_GPT(image_path=None): # function that shows GPT the image and makes a variable named report in which it generates.
   from modules.xiao import readline
   soil_percent = readline() 
   report = analyze_plant(soil_percent, image_path)
@@ -81,9 +81,12 @@ plant3 = check_plant()
 
 time.sleep(1)
 move_forward_to_distance(122)
-drive_forward(200)
+drive_forward(400)
 time.sleep(10)
 move_servo(160)
+drive_backward(500)
+move_backward_to_distance(500)
+move_servo(160) # turns servo to detect moisture
 
 print("Report of Plant 1:\n", plant1.encode('utf-8', errors='replace').decode('utf-8'))
 print("Report of Plant 2:\n", plant2.encode('utf-8', errors='replace').decode('utf-8'))

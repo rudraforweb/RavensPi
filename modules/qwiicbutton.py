@@ -4,7 +4,7 @@
   Module/File: qwiicbutton.py
 """
 
-import qwiic_button
+import qwiic_button # Flashing red button on the side
 import time
 import sys
 
@@ -26,7 +26,7 @@ def hold_to_start():
     cycle_time = 1000  
     off_time = 0        
 
-    # Start pulsing:
+    # Pluses the light
     my_button.LED_config(brightness, cycle_time, off_time)
 
     press_count = 0
@@ -39,7 +39,7 @@ def hold_to_start():
             press_count = 1
             if time.time() - hold_start >= 1.0:  # held for at least 1 second
                 my_button.LED_on(255)
-                break
+                break # stops the loop once the button is held
         else:
             press_count = 0
 

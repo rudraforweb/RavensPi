@@ -26,7 +26,7 @@ int value = 0;
 
 QwiicNarrowOLED myOLED; 
 
-// RavensPi Logo, 128x32px
+// RavensPi Logo, 128x32px, a bitmap made from a usefull website
 uint8_t Ravens_Pi_Icon[] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -63,7 +63,7 @@ uint8_t Ravens_Pi_Icon[] PROGMEM = {
 };
 
 
-void setup() {
+void setup() { 
   pinMode(relayPin, OUTPUT);
   pinMode(switchPin, INPUT_PULLUP);
   pinMode(buzzerPin, OUTPUT);
@@ -101,7 +101,7 @@ void setup() {
 void loop() {
   int switchState = digitalRead(switchPin);
 
-  if (digitalRead(switchPin) == LOW) {
+  if (digitalRead(switchPin) == LOW) { // for the switch on the front
     Serial.println("Switch held!");
     beep(150);
     displayText("Robot Detected");
@@ -110,7 +110,7 @@ void loop() {
     Serial.print("Water sensor: ");
     Serial.println(waterLevel);
 
-    if (waterLevel < 200) {
+    if (waterLevel < 200) { // uses the water level sensor at the bottom of the tank, outputs analog values
       Serial.println("Refill station, it is low on water");
       for (int i = 0; i < 5; i++) {
         displayText("Station low");

@@ -4,7 +4,7 @@
   Note: Contains both RVR movement and distance sensor functions
 """
 
-# Imports
+# Libaries
 from sphero_sdk import *
 import time
 import threading
@@ -15,17 +15,17 @@ import qwiic_vl53l1x
 rvr = SpheroRvrObserver()
 leds = LedControlObserver(rvr)
 
-#Rear LED full red (stopped)
+# Rear LED full red (stopped)
 def rear_red_full():
     leds.set_led_color(RvrLedGroups.brakelight_left, Colors.red)
     leds.set_led_color(RvrLedGroups.brakelight_right, Colors.red)
 
-#Rear LED dim red (moving)
+# Rear LED dim red (moving)
 def rear_red_low():
     leds.set_led_rgb(RvrLedGroups.brakelight_left, 128, 0, 0)
     leds.set_led_rgb(RvrLedGroups.brakelight_right, 128, 0, 0)
     
-#Front headlights white
+# Front headlights white
 def front_white():
     leds.set_led_color(RvrLedGroups.headlight_left, Colors.white)
     leds.set_led_color(RvrLedGroups.headlight_right, Colors.white)

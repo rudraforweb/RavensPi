@@ -40,7 +40,7 @@ def show_information(device, font, message):
     img = Image.new("RGB", device.size, "black")
     draw = ImageDraw.Draw(img)
 
-    # Header
+    # Header for the header on the top
     x_offset = 10
     y_offset = 10
 
@@ -66,4 +66,4 @@ def show_information(device, font, message):
     text_y = (img.height - text_height) // 2
     draw.text((text_x, text_y), message, font=font, fill="white")
 
-    device.display(img)
+    device.display(img) # displays the img

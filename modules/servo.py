@@ -3,7 +3,7 @@
   File: servo.py
 """
 
-# Imports
+# Libaries
 from adafruit_servokit import ServoKit
 import time
 

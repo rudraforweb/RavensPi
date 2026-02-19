@@ -3,7 +3,7 @@
   Module/File: xiao.py
 """
 
-# Imports
+# Libaries
 import serial
 import time
 
