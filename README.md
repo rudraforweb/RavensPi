@@ -56,6 +56,7 @@ The project was developed for Robofest Exhibition and emphasizes real-world reli
 * Luma LCD display driver
 * I²C & GPIO control
 * SMTP (email notifications)
+* C++ (refill station and XIAO)
 
 The software is modular, with separate files for vision, movement, sensors, pumping, email, and display logic.
 
