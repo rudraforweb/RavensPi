@@ -74,3 +74,6 @@ The software is modular, with separate files for vision, movement, sensors, pump
 *	Additional plant metrics (leaf color tracking over time)
 *	Mobile app or web dashboard
 *	Multi-day historical plant health analytics
+
+
+(Icon.png sourced from pngtree.com)
