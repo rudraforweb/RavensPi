@@ -1,6 +1,7 @@
 """
   RavensPi, 2025-2026
   Module/File: openaivision.py
+  Note: A vaild OpenAI API key is required to use this module.
 """
 # This code is for chatGPT analyising the image and sending back an email
 # Imports
