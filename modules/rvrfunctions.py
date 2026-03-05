@@ -9,6 +9,7 @@ from sphero_sdk import *
 import time
 import threading
 import qwiic_vl53l1x
+import sys
 
 
 # Define RVR and LED control
@@ -39,6 +40,7 @@ def init_tof():
             return True
         else:
             print("VL53L1X init failed")
+            sys.exit(1)
             return False
     except OSError as e:
         print(f"VL53L1X I2C error: {e}")
