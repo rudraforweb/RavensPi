@@ -43,6 +43,7 @@ static const unsigned char Ravens_Pi_Icon[] = {
 
 
 void setup() {
+  delay(1000);
   pinMode(relayPin, OUTPUT);
   pinMode(switchPin, INPUT_PULLUP);
   pinMode(buzzerPin, OUTPUT);
@@ -120,7 +121,7 @@ void pourWater() {
   delay(3000);
   displayText("Pouring Water");
   digitalWrite(relayPin, HIGH);
-  delay(6000);
+  delay(3700);
   digitalWrite(relayPin, LOW);
   displayText("Completed");
 }

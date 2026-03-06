@@ -113,16 +113,19 @@ def drive_backward(milliseconds, speed=40):
 
 # Get distance from distance sensor and print
 def get_distance():
+    distance = None
     tof.start_ranging()
     time.sleep(0.005)
     distance = tof.get_distance()
     time.sleep(0.005)
     tof.stop_ranging()
+    print(distance)
     return distance
 
 
 # Move forward to target distance using distance sensor
 def move_forward_to_distance(target_mm, step_mm=5, speed=40, tolerance_mm=2, max_steps=50):
+    distance = None
     rvr.reset_yaw()
     rear_red_low()
     tof.start_ranging()

@@ -45,6 +45,11 @@ def send_to_GPT(image_path=None): # function that shows GPT the image and makes 
   report = analyze_plant(soil_percent, image_path)
   return report
 
+def reset_distance():
+  time.sleep(0.5)
+  distance = None
+  time.sleep(0.5)
+
 # Main loop for plant
 def check_plant():
   image_path = capture_plant_image() # take photo
@@ -53,7 +58,8 @@ def check_plant():
   turn_left_with_signal(90) # turn toward plant
   print("Before moving forward")
   get_distance()
-  move_forward_to_distance(35) # drive forward to plant
+  move_forward_to_distance(35) # drive forward to plan
+  reset_distance()
   print("After moving forward")
   get_distance()
   show_information(device, font, message="Reading soil moisture level...")
@@ -70,30 +76,37 @@ def check_plant():
   get_distance()
   show_information(device, font, message="Moving to next plant")
   move_backward_to_distance(165) # drive backward to route
+  reset_distance()
   print("After moving backward")
   get_distance()
   turn_right_with_signal(90) # turn back to route
   move_servo(160)
   time.sleep(1)
+  init_tof()
+  reset_distance()
   return report
 
 # run for three plants
 plant1 = check_plant()
-drive_forward(750)
+reset_distance()
+move_forward_to_distance(300)
 plant2 = check_plant()
-drive_forward(750)
+reset_distance()
+move_forward_to_distance(160)
 plant3 = check_plant()
+reset_distance()
+
 
 # refill water tank
 time.sleep(1)
 show_information(device, font, message="Heading to refill station")
-move_forward_to_distance(122)
+
 drive_forward(400)
 show_information(device, font, message="Refilling water...")
 time.sleep(10)
 move_servo(160)
-drive_backward(500)
-move_backward_to_distance(500)
+drive_backward(410)
+move_backward_to_distance(420)
 move_servo(160)
 
 
