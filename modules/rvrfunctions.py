@@ -5,6 +5,8 @@
 """
 
 # Libaries
+from turtle import speed
+
 from sphero_sdk import *
 import time
 import threading
@@ -31,20 +33,22 @@ def front_white():
     leds.set_led_color(RvrLedGroups.headlight_left, Colors.white)
     leds.set_led_color(RvrLedGroups.headlight_right, Colors.white)
 
-def init_tof():
+def init_tof(tries=3):
     global tof
-    tof = qwiic_vl53l1x.QwiicVL53L1X()
-    try:
-        if tof.sensor_init() is None:
-            print("VL53L1X distance sensor online")
-            return True
-        else:
-            print("VL53L1X init failed")
-            sys.exit(1)
-            return False
-    except OSError as e:
-        print(f"VL53L1X I2C error: {e}")
-        return False
+    for trial in range(tries):
+        tof = qwiic_vl53l1x.QwiicVL53L1X()
+        try:
+            if tof.sensor_init() is None:
+                print("VL53L1X distance sensor online")
+                return True
+            else:
+                print(f"VL53L1X init failed (attempt {trial + 1}/3)")
+        except OSError as e:
+            print(f"VL53L1X I2C error (attempt {trial + 1}/3): {e}")
+        time.sleep(0.5)  # wait before retry
+
+    print("VL53L1X failed after 3 attempts, exiting")
+    sys.exit(1)
 
 # Uses threading to blink turn signals while turning
 def blink_turn_signal(led_group, rear, times=2, interval=0.5):
@@ -111,87 +115,103 @@ def drive_backward(milliseconds, speed=40):
     rear_red_full()
     time.sleep(1)
 
-# Get distance from distance sensor and print
-def get_distance():
-    distance = None
-    tof.start_ranging()
-    time.sleep(0.005)
-    distance = tof.get_distance()
-    time.sleep(0.005)
-    tof.stop_ranging()
-    print(distance)
-    return distance
-
+def get_distance(retries=3):
+    for attempt in range(retries):
+        try:
+            time.sleep(0.005)
+            distance = tof.get_distance()
+            time.sleep(0.005)
+            tof.clear_interrupt()  # arm for next read
+            if distance is not None and distance > 0:
+                return distance
+            print(f"Bad read on attempt {attempt + 1}, retrying...")
+            
+        except Exception as e:
+            print(f"Sensor error: {e}")
+    print("All retries failed")
+    return None
 
 # Move forward to target distance using distance sensor
-def move_forward_to_distance(target_mm, step_mm=5, speed=40, tolerance_mm=2, max_steps=50):
-    distance = None
+def move_forward_to_distance(target_mm, speed=40, tolerance_mm=5):
     rvr.reset_yaw()
     rear_red_low()
     tof.start_ranging()
-    try:
-        steps = 0
-        current_mm = get_distance()
-        # Check if too close:
-        if current_mm <= target_mm + tolerance_mm:
-            print("Too close, skipping move forward")
-            return
+    time.sleep(0.3)
+    for _ in range(3):
+        tof.get_distance()
+        tof.clear_interrupt()
+        time.sleep(0.01)
+    
+    rvr.drive_control.roll_start(speed=255, heading=0)  # full power burst
+    time.sleep(0.1)  # just enough to break static friction
+    rvr.drive_control.roll_start(speed=speed, heading=0)  # back to normal
 
+    try:
         while True:
             current_mm = get_distance()
-            if abs(current_mm - target_mm) <= tolerance_mm:
-                break
-            if current_mm < target_mm:
-                print("Too close, stopping")
-                break
-            if steps >= max_steps:
-                print("Timeout: max steps reached")
+
+            if current_mm is None:
+                print("Bad sensor read, stopping")
                 break
 
-            step_time = step_mm / 152.4  
-            rvr.reset_yaw()
-            rvr.drive_control.drive_forward_seconds(speed=speed, heading=0, time_to_drive=step_time)
-            steps += 1
+            print(f"Distance: {current_mm}mm -> target: {target_mm}mm")
+
+            if current_mm <= target_mm + tolerance_mm:
+                print("Target reached")
+                break
+
+            gap = current_mm - target_mm
+            scaled_speed = max(20, min(speed, int(speed * (gap / 200))))
+
+            rvr.drive_control.roll_start(speed=scaled_speed, heading=0)
+            time.sleep(0.05)
 
     finally:
+        rvr.drive_control.roll_stop(0)
         tof.stop_ranging()
         rear_red_full()
-        time.sleep(0.05)
 
 
 # Move away from target distance using distance sensor
-def move_backward_to_distance(target_mm, step_mm=5, speed=30, tolerance_mm=2, max_steps=50):
-    rvr.reset_yaw()
+def move_backward_to_distance(target_mm, speed=30, tolerance_mm=5):
+    rvr.reset_yaw()        
     rear_red_low()
     tof.start_ranging()
-    try:
-        steps = 0
-        current_mm = get_distance()
-        # Check if already too far:
-        if current_mm >= target_mm - tolerance_mm:
-            print("Too far, skipping move backward")
-            return
+    time.sleep(0.3)
+    
+    for _ in range(3):
+        tof.get_distance()
+        tof.clear_interrupt()
+        time.sleep(0.01)
+        
+    rvr.drive_control.roll_start(speed=-255, heading=0)  # full power burst
+    time.sleep(0.1)  # just enough to break static friction
+    rvr.drive_control.roll_start(speed=-speed, heading=0)  # back to normal
 
+    try:
         while True:
             current_mm = get_distance()
-            if abs(current_mm - target_mm) <= tolerance_mm:
-                break
-            if current_mm > target_mm:
-                print("Too far, stopping")
-                break
-            if steps >= max_steps:
-                print("Timeout: max steps reached")
+
+            if current_mm is None:
+                print("Bad sensor read, stopping")
                 break
 
-            step_time = step_mm / 152.4
-            rvr.reset_yaw()
-            rvr.drive_control.drive_backward_seconds(speed=speed, heading=0, time_to_drive=step_time)
-            steps += 1
+            print(f"Distance: {current_mm}mm -> target: {target_mm}mm")
+
+            if current_mm >= target_mm - tolerance_mm:
+                print("Target reached")
+                break
+
+            gap = target_mm - current_mm
+            scaled_speed = max(20, min(speed, int(speed * (gap / 200))))
+
+            rvr.drive_control.roll_start(speed=-scaled_speed, heading=0)
+            time.sleep(0.05)
 
     finally:
+        rvr.drive_control.roll_stop(0)
         tof.stop_ranging()
         rear_red_full()
-        time.sleep(0.05)
         
         
        

@@ -6,6 +6,8 @@
   Sunlake Academy of Math and Science
   File: main.py
 """
+
+
 # Inital imports
 import time
 from modules.lumalcd import *
@@ -71,28 +73,26 @@ def check_plant():
   move_servo(150)
   move_backward_to_distance(45)
   pump_water(1) # water plant
-  init_tof()
   print("Before moving backward")
   get_distance()
   show_information(device, font, message="Moving to next plant")
-  move_backward_to_distance(165) # drive backward to route
+  move_backward_to_distance(100) # drive backward to route
   reset_distance()
   print("After moving backward")
   get_distance()
   turn_right_with_signal(90) # turn back to route
   move_servo(160)
   time.sleep(1)
-  init_tof()
   reset_distance()
   return report
 
 # run for three plants
 plant1 = check_plant()
 reset_distance()
-move_forward_to_distance(300)
+move_forward_to_distance(340)
 plant2 = check_plant()
 reset_distance()
-move_forward_to_distance(160)
+move_forward_to_distance(220)
 plant3 = check_plant()
 reset_distance()
 
@@ -101,12 +101,12 @@ reset_distance()
 time.sleep(1)
 show_information(device, font, message="Heading to refill station")
 
-drive_forward(400)
+drive_forward(475)
 show_information(device, font, message="Refilling water...")
 time.sleep(10)
 move_servo(160)
 drive_backward(410)
-move_backward_to_distance(420)
+move_backward_to_distance(455)
 move_servo(160)
 
 
