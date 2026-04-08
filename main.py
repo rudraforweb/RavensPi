@@ -89,7 +89,7 @@ def check_plant():
 # run for three plants
 plant1 = check_plant()
 reset_distance()
-move_forward_to_distance(340)
+move_forward_to_distance(360)
 plant2 = check_plant()
 reset_distance()
 move_forward_to_distance(220)
@@ -101,15 +101,15 @@ reset_distance()
 time.sleep(1)
 show_information(device, font, message="Heading to refill station")
 
-drive_forward(475)
+move_forward_to_distance(130)
+drive_forward(500)
 show_information(device, font, message="Refilling water...")
 time.sleep(10)
 move_servo(160)
-drive_backward(410)
 move_backward_to_distance(455)
 move_servo(160)
 
-
+show_information(device, font, message="Sending...")
 print("Report of Plant 1:\n", plant1.encode('utf-8', errors='replace').decode('utf-8'))
 print("Report of Plant 2:\n", plant2.encode('utf-8', errors='replace').decode('utf-8'))
 print("Report of Plant 3:\n", plant3.encode('utf-8', errors='replace').decode('utf-8'))

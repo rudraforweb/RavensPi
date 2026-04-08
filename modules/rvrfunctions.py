@@ -142,9 +142,9 @@ def move_forward_to_distance(target_mm, speed=40, tolerance_mm=5):
         tof.clear_interrupt()
         time.sleep(0.01)
     
-    rvr.drive_control.roll_start(speed=255, heading=0)  # full power burst
-    time.sleep(0.1)  # just enough to break static friction
-    rvr.drive_control.roll_start(speed=speed, heading=0)  # back to normal
+    rvr.drive_control.roll_start(speed=100, heading=0)
+    time.sleep(0.1)
+    rvr.drive_control.roll_start(speed=speed, heading=0)
 
     try:
         while True:
@@ -161,7 +161,10 @@ def move_forward_to_distance(target_mm, speed=40, tolerance_mm=5):
                 break
 
             gap = current_mm - target_mm
-            scaled_speed = max(20, min(speed, int(speed * (gap / 200))))
+            if gap < 100:
+                scaled_speed = 15
+            else:
+                scaled_speed = max(20, min(speed, int(speed * (gap / 200))))
 
             rvr.drive_control.roll_start(speed=scaled_speed, heading=0)
             time.sleep(0.05)
@@ -172,7 +175,7 @@ def move_forward_to_distance(target_mm, speed=40, tolerance_mm=5):
         rear_red_full()
 
 
-# Move away from target distance using distance sensor
+# Move backward to target distance using distance sensor
 def move_backward_to_distance(target_mm, speed=30, tolerance_mm=5):
     rvr.reset_yaw()        
     rear_red_low()
@@ -184,9 +187,9 @@ def move_backward_to_distance(target_mm, speed=30, tolerance_mm=5):
         tof.clear_interrupt()
         time.sleep(0.01)
         
-    rvr.drive_control.roll_start(speed=-255, heading=0)  # full power burst
-    time.sleep(0.1)  # just enough to break static friction
-    rvr.drive_control.roll_start(speed=-speed, heading=0)  # back to normal
+    rvr.drive_control.roll_start(speed=-100, heading=0)
+    time.sleep(0.1)
+    rvr.drive_control.roll_start(speed=-speed, heading=0)
 
     try:
         while True:
@@ -203,7 +206,10 @@ def move_backward_to_distance(target_mm, speed=30, tolerance_mm=5):
                 break
 
             gap = target_mm - current_mm
-            scaled_speed = max(20, min(speed, int(speed * (gap / 200))))
+            if gap < 100:
+                scaled_speed = 15
+            else:
+                scaled_speed = max(20, min(speed, int(speed * (gap / 200))))
 
             rvr.drive_control.roll_start(speed=-scaled_speed, heading=0)
             time.sleep(0.05)
@@ -214,5 +220,4 @@ def move_backward_to_distance(target_mm, speed=30, tolerance_mm=5):
         rear_red_full()
         
         
-       
 # Note: used code from both the Sphero RVR SDK and Sparkfun VL53L1X Library for reference
